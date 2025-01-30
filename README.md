@@ -39,8 +39,8 @@ To run SiteWatch locally, follow these steps:
 #### 1. Clone the Repository
 
 ```bash
-git clone <your_repository_url>
-cd <your_repository_folder>
+git clone https://github.com/CodeByKalvin/SiteWatch.git
+cd SiteWatch
 ```
 
 #### 2. Install Dependencies
