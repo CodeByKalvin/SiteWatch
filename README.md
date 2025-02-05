@@ -142,12 +142,12 @@ This will launch the SiteWatch web interface, where you can monitor websites, mo
 ```
 SiteWatch/
 │
-├── sitewatch.py                # Main Python script
+├── sitewatch.py             # Main Python script
 ├── README.md                # This README file
 ├── requirements.txt         # List of dependencies
-├── static/                    # Folder containing the style.css
+├── static/                  # Folder containing the style.css
 │    └── style.css
-└── templates/                  # Folder containing the index.html
+└── templates/               # Folder containing the index.html
     └── index.html
 ```
 
