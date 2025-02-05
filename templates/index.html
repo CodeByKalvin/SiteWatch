@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SiteWatch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>SiteWatch <small>CodeByKalvin</small></h1>
+    <table>
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Status</th>
+                <th>Last Checked</th>
+                <th>Error</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="status-table-body">
+            {% for status in statuses %}
+            <tr data-url="{{ status.url }}">
+                <td>{{ status.url }}</td>
+                <td class="{{ 'up' if status.status else 'down' }}">
+                    {{ 'UP' if status.status else 'DOWN' }}
+                </td>
+                <td>{{ status.last_checked }}</td>
+                <td>{{ status.error if status.error else 'N/A' }}</td>
+                <td>
+                   <form action="{{ url_for('remove_website') }}" method="post">
+                        <input type="hidden" name="remove_url" value="{{ status.url }}">
+                        <button type="submit">Remove</button>
+                    </form>
+                </td>
+            </tr>
+             {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Configuration</h1>
+    <div class="settings-container">
+        <form id="env-form" action="{{ url_for('save_env') }}" method="post">
+        <h2>Notification Settings</h2>
+            <label for="email_enabled">Email Enabled:</label>
+           <select id="email_enabled" name="email_enabled">
+             <option value="true" {% if env_settings.email_enabled|lower == 'true' %}selected{% endif %}>True</option>
+             <option value="false" {% if env_settings.email_enabled|lower == 'false' %}selected{% endif %}>False</option>
+           </select>
+          <label for="smtp_server">SMTP Server:</label>
+          <input type="text" id="smtp_server" name="smtp_server" value="{{ env_settings.smtp_server }}">
+          <label for="smtp_port">SMTP Port:</label>
+          <input type="text" id="smtp_port" name="smtp_port" value="{{ env_settings.smtp_port }}">
+          <label for="smtp_user">SMTP User:</label>
+          <input type="text" id="smtp_user" name="smtp_user" value="{{ env_settings.smtp_user }}">
+          <label for="smtp_password">SMTP Password:</label>
+          <input type="password" id="smtp_password" name="smtp_password" value="{{ env_settings.smtp_password }}">
+           <label for="recipient_email">Recipient Email:</label>
+          <input type="text" id="recipient_email" name="recipient_email" value="{{ env_settings.recipient_email }}">
+           <label for="slack_enabled">Slack Enabled:</label>
+           <select id="slack_enabled" name="slack_enabled">
+              <option value="true" {% if env_settings.slack_enabled|lower == 'true' %}selected{% endif %}>True</option>
+              <option value="false" {% if env_settings.slack_enabled|lower == 'false' %}selected{% endif %}>False</option>
+           </select>
+           <label for="slack_webhook_url">Slack Webhook URL:</label>
+           <input type="text" id="slack_webhook_url" name="slack_webhook_url" value="{{ env_settings.slack_webhook_url }}">
+           <label for="telegram_enabled">Telegram Enabled:</label>
+           <select id="telegram_enabled" name="telegram_enabled">
+              <option value="true" {% if env_settings.telegram_enabled|lower == 'true' %}selected{% endif %}>True</option>
+              <option value="false" {% if env_settings.telegram_enabled|lower == 'false' %}selected{% endif %}>False</option>
+           </select>
+           <label for="telegram_bot_token">Telegram Bot Token:</label>
+           <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="{{ env_settings.telegram_bot_token }}">
+            <label for="telegram_chat_id">Telegram Chat ID:</label>
+           <input type="text" id="telegram_chat_id" name="telegram_chat_id" value="{{ env_settings.telegram_chat_id }}">
+         <button type="submit">Save Settings</button>
+        </form>
+    </div>
+    <form id="config-form" action="{{ url_for('save_config') }}" method="post">
+          <input type="hidden" id="config_data" name="config_data" value="">
+    </form>
+    <form id="add-website-form" action="{{ url_for('add_website') }}" method="post">
+        <h2>Add New Website</h2>
+         <label for="new_url">New Website URL:</label>
+         <input type="text" id="new_url" name="new_url" required>
+        <button type="submit">Add Website</button>
+    </form>
+
+<script>
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/');
+
+    socket.on('update', function(data) {
+        var statusTableBody = document.getElementById('status-table-body');
+        statusTableBody.innerHTML = ''; // Clear existing table
+
+        data.statuses.forEach(function(status) {
+           var row = '<tr data-url="' + status.url + '">' +
+                '<td>' + status.url + '</td>' +
+                '<td class="' + (status.status ? 'up' : 'down') + '">' + (status.status ? 'UP' : 'DOWN') + '</td>' +
+                '<td>' + status.last_checked + '</td>' +
+                '<td>' + (status.error ? status.error : 'N/A') + '</td>' +
+                '<td> <form action="/remove_website" method="post"> <input type="hidden" name="remove_url" value="' + status.url + '"> <button type="submit">Remove</button> </form> </td>' +
+                '</tr>';
+            statusTableBody.innerHTML += row;
+        });
+    });
+
+</script>
+</body>
+</html>

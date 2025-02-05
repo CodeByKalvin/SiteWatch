@@ -1,0 +1,6 @@
+Flask
+Flask-SocketIO
+requests
+python-dotenv
+beautifulsoup4
+SQLAlchemy
