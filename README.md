@@ -4,8 +4,6 @@ A Python-based website monitoring application designed to check website availabi
 
 This application continuously monitors the status of specified websites, alerting you through email, Slack, or Telegram when a site goes down. It provides a simple web interface to manage the monitored sites and notification settings.
 
-**CodeByKalvin**
-
 ### Table of Contents
 - [Features](#features)
 - [Installation](#installation)
